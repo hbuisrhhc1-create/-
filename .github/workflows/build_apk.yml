@@ -21,6 +21,7 @@ jobs:
       uses: gradle/actions/setup-gradle@v3
       with:
         gradle-version: '7.5.1'
+        cache-disabled: true
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -43,4 +44,3 @@ jobs:
       with:
         name: nexus-agent-apk
         path: app/build/outputs/apk/debug/app-debug.apk
-        
