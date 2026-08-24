@@ -1,49 +1,51 @@
 import os
-from PIL import Image
+from PIL import Image, ImageDraw
 
 def create_full_project():
-    print("[*] Generating complete Nexus Agent Android project structure with custom icon...")
+    print("[*] Generating complete Nexus Agent Android project structure...")
 
     # Define all required directories
     dirs = [
         "app/src/main/java/com/inon/nexusagent",
         "app/src/main/res/layout",
-        "app/src/main/res/mipmap-hdpi",
         "app/src/main/res/mipmap-mdpi",
+        "app/src/main/res/mipmap-hdpi",
         "app/src/main/res/mipmap-xhdpi",
         "app/src/main/res/mipmap-xxhdpi",
         "app/src/main/res/mipmap-xxxhdpi",
-        "app/src/main/res/values",
-        "gradle/wrapper"
+        "app/src/main/res/values"
     ]
 
     for d in dirs:
         os.makedirs(d, exist_ok=True)
         print(f"[+] Created directory: {d}")
 
-    # Processing and resizing the icon if icon.png exists
-    if os.path.exists("icon.png"):
-        print("[*] Processing custom icon...")
-        img = Image.open("icon.png")
-        
-        # Android mipmap standard sizes
-        sizes = {
-            "mipmap-mdpi": 48,
-            "mipmap-hdpi": 72,
-            "mipmap-xhdpi": 96,
-            "mipmap-xxhdpi": 144,
-            "mipmap-xxxhdpi": 192
-        }
-        
-        for folder, size in sizes.items():
-            resized_img = img.resize((size, size), Image.Resampling.LANCZOS)
-            resized_img.save(f"app/src/main/res/{folder}/ic_launcher.png")
-            resized_img.save(f"app/src/main/res/{folder}/ic_launcher_round.png")
-        print("[+] Icon successfully resized and placed in all mipmap folders!")
-    else:
-        print("[!] Warning: 'icon.png' not found in root directory. Default icon will be used.")
+    # Handle Icon Generation with full RGBA transparency support
+    sizes = {
+        "mipmap-mdpi": 48,
+        "mipmap-hdpi": 72,
+        "mipmap-xhdpi": 96,
+        "mipmap-xxhdpi": 144,
+        "mipmap-xxxhdpi": 192
+    }
 
-    # 1. AndroidManifest.xml (updated with icon references)
+    if os.path.exists("icon.png"):
+        print("[*] Found icon.png, processing transparent icon...")
+        img = Image.open("icon.png").convert("RGBA")
+    else:
+        print("[!] icon.png not found. Creating fallback transparent icon...")
+        img = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(img)
+        draw.ellipse((50, 50, 462, 462), fill=(0, 122, 255, 255))
+
+    for folder, size in sizes.items():
+        resized = img.resize((size, size), Image.Resampling.LANCZOS)
+        resized.save(f"app/src/main/res/{folder}/ic_launcher.png", "PNG")
+        resized.save(f"app/src/main/res/{folder}/ic_launcher_round.png", "PNG")
+
+    print("[+] Transparent icon set across all density folders!")
+
+    # 1. AndroidManifest.xml
     manifest_code = """<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.inon.nexusagent">
@@ -301,4 +303,3 @@ dependencies {
 
 if __name__ == "__main__":
     create_full_project()
-      
