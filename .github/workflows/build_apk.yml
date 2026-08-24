@@ -17,7 +17,7 @@ jobs:
         distribution: 'temurin'
         java-version: '11'
 
-    - name: Setup Gradle 7.5.1
+    - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
       with:
         gradle-version: '7.5.1'
@@ -30,10 +30,10 @@ jobs:
     - name: Install dependencies
       run: pip install Pillow
 
-    - name: Generate Project Files and Icons
+    - name: Generate Project Files
       run: python3 generate_nexus_project.py
 
-    - name: Build APK with Gradle
+    - name: Build APK
       run: gradle assembleDebug --stacktrace
       env:
         ANDROID_HOME: /usr/local/lib/android/sdk
@@ -43,3 +43,4 @@ jobs:
       with:
         name: nexus-agent-apk
         path: app/build/outputs/apk/debug/app-debug.apk
+        
