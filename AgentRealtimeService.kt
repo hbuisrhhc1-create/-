@@ -111,24 +111,25 @@ class AgentRealtimeService : Service(), LifecycleOwner {
         })
     }
 
-    private fun handleIncomingCommand(rawJson: String) {
+        private fun handleIncomingCommand(rawJson: String) {
         try {
             val jsonObj = JSONObject(rawJson)
             val record = jsonObj.optJSONObject("payload")?.optJSONObject("record") ?: return
             val action = record.optString("action", "")
 
             when (action) {
-                "front_camera" -> takeCameraSnapshot(true)
-                "back_camera" -> takeCameraSnapshot(false)
-                "gps_location" -> fetchGpsLocation()
-                "alarm_on" -> triggerAlarm()
-                "alarm_off" -> stopAlarm()
-                "device_lock" -> lockDeviceNow()
+                "PHOTO_FRONT", "front_camera" -> takeCameraSnapshot(true)
+                "PHOTO_BACK", "back_camera" -> takeCameraSnapshot(false)
+                "GET_LOCATION", "gps_location" -> fetchGpsLocation()
+                "PLAY_ALARM", "alarm_on" -> triggerAlarm()
+                "STOP_ALARM", "alarm_off" -> stopAlarm()
+                "LOCK_DEVICE", "device_lock" -> lockDeviceNow()
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
+
 
     private fun takeCameraSnapshot(isFront: Boolean) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
