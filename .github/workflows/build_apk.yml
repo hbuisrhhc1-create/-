@@ -1,8 +1,6 @@
 name: Build Android APK
 
 on:
-  push:
-    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -30,8 +28,13 @@ jobs:
     - name: Generate Project Files and Icons
       run: python3 generate_nexus_project.py
 
+    - name: Generate Gradle Wrapper
+      run: gradle wrapper --gradle-version 7.5.1
+
     - name: Build APK with Gradle
-      run: gradle assembleDebug
+      run: ./gradlew assembleDebug --stacktrace
+      env:
+        ANDROID_HOME: /usr/local/lib/android/sdk
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
