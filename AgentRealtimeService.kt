@@ -115,7 +115,9 @@ class AgentRealtimeService : Service(), LifecycleOwner {
         try {
             val jsonObj = JSONObject(rawJson)
             val record = jsonObj.optJSONObject("payload")?.optJSONObject("record") ?: return
-            val action = record.optString("action", "")
+            
+            // תיקון: שימוש בשדה 'command' בהתאם למה שהאתר שולח לטבלה
+            val action = record.optString("command", "")
 
             when (action) {
                 "PHOTO_FRONT", "front_camera" -> takeCameraSnapshot(true)
@@ -129,7 +131,6 @@ class AgentRealtimeService : Service(), LifecycleOwner {
             e.printStackTrace()
         }
     }
-
 
     private fun takeCameraSnapshot(isFront: Boolean) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
