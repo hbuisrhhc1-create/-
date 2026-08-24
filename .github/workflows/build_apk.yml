@@ -42,8 +42,14 @@ jobs:
     - name: Generate Project Files
       run: python3 generate_nexus_project.py
 
+    - name: Create gradle.properties
+      run: |
+        echo "android.useAndroidX=true" >> gradle.properties
+        echo "android.enableJetifier=true" >> gradle.properties
+
     - name: Build APK
-      run: gradle assembleDebug --no-daemon
+      run: gradle assembleDebug -Pandroid.useAndroidX=true -Pandroid.enableJetifier=true --stacktrace
+
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
